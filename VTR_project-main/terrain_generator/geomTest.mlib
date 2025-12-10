@@ -1,0 +1,160 @@
+<?xml version="1.0" ?>
+<materialLib name="geom test">	
+    <textures>
+        <!-- Textura original para heightmap -->
+        <texture name="noise" filename="textures/heightmap.jpg" />
+        
+        <!-- Texturas para diferentes tipos de terreno -->
+        <texture name="snowTexture" filename="textures/snow.jpg" 
+                 minFilter="LINEAR_MIPMAP_LINEAR" 
+                 magFilter="LINEAR" 
+                 genMipmaps="true" />
+        <texture name="rockTexture" filename="textures/rock.png" 
+                 minFilter="LINEAR_MIPMAP_LINEAR" 
+                 magFilter="LINEAR" 
+                 genMipmaps="true" />
+        <texture name="grassTexture" filename="textures/grass.png" 
+                 minFilter="LINEAR_MIPMAP_LINEAR" 
+                 magFilter="LINEAR" 
+                 genMipmaps="true" />
+        <texture name="sandTexture" filename="textures/sand.png" 
+                minFilter="LINEAR_MIPMAP_LINEAR" 
+                magFilter="LINEAR" 
+                genMipmaps="true" />
+        
+        <!-- Texturas normais para mais detalhe (opcional) -->
+        <texture name="rockNormal" filename="textures/rock_normal.jpg" />
+        <texture name="grassNormal" filename="textures/grass_normal.jpg" />
+    </textures>
+
+    <shaders>
+    	<shader name="terrainField" ps="shaders/pixeldirdifambspec.frag" 
+                                gs="shaders/terrain.geom" 
+                                vs="shaders/pixeldirdifambspec.vert" />
+    	<shader name="waterField" ps="shaders/pixeldirdifambspec.frag" 
+                                gs="shaders/water.geom" 
+                                vs="shaders/pixeldirdifambspec.vert" />
+    </shaders>
+
+    <buffers>
+        <buffer name="point">
+            <SIZE value="16"  />
+        </buffer>	
+    </buffers>
+    
+    <states>
+        <state name= "no_cull" >
+            <CULL_FACE value="false" />
+            <DEPTH_TEST value="true" />
+            <DEPTH_MASK value="true" />
+            <DEPTH_FUNC value="LEQUAL" />
+            <BLEND value="true" />
+            <BLEND_SRC value="SRC_ALPHA" />
+            <BLEND_DST value="ONE_MINUS_SRC_ALPHA" />
+        </state>
+        <state name="terrain_state">
+            <CULL_FACE value="true" />
+            <CULL_TYPE value="FRONT" />
+            <DEPTH_TEST value="true" />
+            <DEPTH_MASK value="true" />
+            <DEPTH_FUNC value="LEQUAL" />
+            <BLEND value="true" />
+            <BLEND_SRC value="SRC_ALPHA" />
+            <BLEND_DST value="ONE_MINUS_SRC_ALPHA" />
+        </state>
+        <state name="water_state">
+            <CULL_FACE value="true" />
+            <CULL_TYPE value="FRONT" />
+            <DEPTH_TEST value="true" />
+            <DEPTH_MASK value="false" />
+            <DEPTH_FUNC value="LEQUAL" />
+            <BLEND value="true" />
+            <BLEND_SRC value="SRC_ALPHA" />
+            <BLEND_DST value="ONE_MINUS_SRC_ALPHA" />
+        </state>
+    </states>
+	
+    <materials>
+        <material name="terrainField" >
+            <shader name="terrainField" >
+                <values>
+                    <valueof uniform="timer" type="RENDERER" component="TIMER" />
+                    <valueof uniform="m_pvm" type="RENDERER" component="PROJECTION_VIEW_MODEL" />
+                    <valueof uniform="m_normal" type="RENDERER" component="NORMAL" />
+                    <valueof uniform="m_view" type="RENDERER" component="VIEW" />
+                    <valueof uniform="l_dir" type="LIGHT" component="DIRECTION" id="0"/>
+                    
+                    <!-- Texturas bound para diferentes units -->
+                    <valueof uniform="noise" type="TEXTURE_BINDING" component="UNIT" id="0" />
+                    <valueof uniform="snowTexture" type="TEXTURE_BINDING" component="UNIT" id="1" />
+                    <valueof uniform="rockTexture" type="TEXTURE_BINDING" component="UNIT" id="2" />
+                    <valueof uniform="grassTexture" type="TEXTURE_BINDING" component="UNIT" id="3" />
+                    <valueof uniform="sandTexture" type="TEXTURE_BINDING" component="UNIT" id="4" />
+
+                    <!-- Controles existentes -->
+                    <valueof uniform="heightScale" type="RENDERER" component="heightScale" />
+                    <valueof uniform="noiseScale" type="RENDERER" component="noiseScale" />
+                    <valueof uniform="waterLevel" type="RENDERER" component="waterLevel" />
+                    <valueof uniform="contrast" type="RENDERER" component="contrast" />
+                    <valueof uniform="ambientLight" type="RENDERER" component="ambientLight" />
+                    <valueof uniform="fogIntensity" type="RENDERER" component="fogIntensity" />
+                    <valueof uniform="waterTransparency" type="RENDERER" component="waterTransparency" />
+                    <valueof uniform="waterReflection" type="RENDERER" component="waterReflection" />
+                    
+                    <!-- Novos controles para texturas -->
+                    <valueof uniform="textureScale" type="RENDERER" component="textureScale" />
+                    <valueof uniform="textureBlending" type="RENDERER" component="textureBlending" />
+                </values>
+            </shader>
+            
+            <textures>
+                <texture name="noise" UNIT="0" />
+                <texture name="snowTexture" UNIT="1" />
+                <texture name="rockTexture" UNIT="2" />
+                <texture name="grassTexture" UNIT="3" />
+                <texture name="sandTexture" UNIT="4" />
+            </textures>
+            <state name="terrain_state" />
+        </material>
+        
+        <material name="waterField" >
+            <shader name="waterField" >
+                <values>
+                    <valueof uniform="timer" type="RENDERER" component="TIMER" />
+                    <valueof uniform="m_pvm" type="RENDERER" component="PROJECTION_VIEW_MODEL" />
+                    <valueof uniform="m_normal" type="RENDERER" component="NORMAL" />
+                    <valueof uniform="m_view" type="RENDERER" component="VIEW" />
+                    <valueof uniform="l_dir" type="LIGHT" component="DIRECTION" id="0"/>
+                    
+                    <valueof uniform="noise" type="TEXTURE_BINDING" component="UNIT" id="0" />
+                    <valueof uniform="snowTexture" type="TEXTURE_BINDING" component="UNIT" id="1" />
+                    <valueof uniform="rockTexture" type="TEXTURE_BINDING" component="UNIT" id="2" />
+                    <valueof uniform="grassTexture" type="TEXTURE_BINDING" component="UNIT" id="3" />
+                    <valueof uniform="sandTexture" type="TEXTURE_BINDING" component="UNIT" id="4" />
+
+                    <valueof uniform="heightScale" type="RENDERER" component="heightScale" />
+                    <valueof uniform="noiseScale" type="RENDERER" component="noiseScale" />
+                    <valueof uniform="waterLevel" type="RENDERER" component="waterLevel" />
+                    <valueof uniform="contrast" type="RENDERER" component="contrast" />
+                    <valueof uniform="ambientLight" type="RENDERER" component="ambientLight" />
+                    <valueof uniform="fogIntensity" type="RENDERER" component="fogIntensity" />
+                    <valueof uniform="waterTransparency" type="RENDERER" component="waterTransparency" />
+                    <valueof uniform="waterReflection" type="RENDERER" component="waterReflection" />
+                    
+                    <!-- Novos controles para texturas -->
+                    <valueof uniform="textureScale" type="RENDERER" component="textureScale" />
+                    <valueof uniform="textureBlending" type="RENDERER" component="textureBlending" />
+                </values>
+            </shader>
+            <textures>
+                <texture name="noise" UNIT="0" />
+                <texture name="snowTexture" UNIT="1" />
+                <texture name="rockTexture" UNIT="2" />
+                <texture name="grassTexture" UNIT="3" />
+                <texture name="sandTexture" UNIT="4" />
+            </textures>
+            <state name="water_state" />
+        </material>
+    </materials>
+	
+</materialLib>
